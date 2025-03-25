@@ -1,0 +1,10 @@
+.docker
+
+# python
+robot/__pycache__/
+robot/*/__pycache__/
+robot/*/*/__pycache__/
+robot/*/*/*/__pycache__/
+.env/
+.venv/
+venv/

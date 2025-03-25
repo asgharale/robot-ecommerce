@@ -1,0 +1,44 @@
+# version: '3.9'
+services:
+  robot:
+    build:
+      context: .
+      args:
+        - DEV=true
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000 --noreload"
+    container_name: robot_api_c
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./robot:/app
+    env_file:
+      - ./.env.dev
+    environment:
+      - DB_HOST=db
+      - DB_NAME=db
+      - DB_USER=user
+      - DB_PASS=localdevpw
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  db:
+    image: postgres:17.1
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=localdevpw
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "db", "-U", "user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
