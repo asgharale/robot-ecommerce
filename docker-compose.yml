@@ -1,4 +1,3 @@
-# version: '3.9'
 services:
   robot:
     build:
@@ -7,7 +6,7 @@ services:
         - DEV=true
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000 --noreload"
+             python manage.py runserver 0.0.0.0:8000"
     container_name: robot_api_c
     ports:
       - '8000:8000'
@@ -28,8 +27,9 @@ services:
     image: postgres:17.1
     volumes:
       - db-data:/var/lib/postgresql/data
+    user: postgres
     ports:
-      - 5432:5432
+      - '5433:5432'
     environment:
       - POSTGRES_DB=db
       - POSTGRES_USER=user
@@ -39,6 +39,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
 volumes:
   db-data:

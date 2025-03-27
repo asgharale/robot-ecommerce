@@ -28,6 +28,9 @@ INSTALLED_APPS = [
 
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
+    'sort.apps.SortConfig',
+    'medstore.apps.MedstoreConfig',
+    'products.apps.ProductsConfig',
 ]
 
 MIDDLEWARE = [
