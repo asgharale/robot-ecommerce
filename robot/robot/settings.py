@@ -25,6 +25,7 @@ INSTALLED_APPS = [
 
     # third part
     'phonenumber_field',
+    'rest_framework',
 
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
