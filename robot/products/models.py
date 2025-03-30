@@ -1,5 +1,12 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
+# from celery import shared_task
+from order.models import OrderItem
 
+
+user_model = get_user_model()
 
 
 class DiscountGroup(models.Model):
@@ -57,10 +64,10 @@ class Product(models.Model):
     detailes = models.ManyToManyField(Detail)
     float_detailes = models.ManyToManyField(FloatDetail)
     int_details = models.ManyToManyField(IntDetail)
-    Purchases = models.PositiveIntegerField(default=1)
 
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
+    authors = models.ManyToManyField(user_model)
 
     discount = models.SmallIntegerField(default=0)
     discount_group = models.ForeignKey(DiscountGroup, on_delete=models.DO_NOTHING, blank=True)
@@ -70,13 +77,17 @@ class Product(models.Model):
         return self.title + ' | ' + self.created_at
 
     @property
-    def get_sell_price(self):
+    def sell_price(self):
         min = self.org_price * ((100-self.discount)/100)
         if self.discount_group:
             group_price = self.org_price * ((100-self.discount_group.amount)/100)
             if min>group_price:
                 min = group_price
         return min
+
+    @property
+    def purchases(self) -> int:
+        return OrderItem.objects.count()        
 
 
 class Ad(models.Model):
