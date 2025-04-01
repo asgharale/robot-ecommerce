@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 from .models import (
     CUser,
+    Address,
     OTPRequest
 )
 from .forms import CUserCreationForm
@@ -10,7 +11,7 @@ from .forms import CUserCreationForm
 
 
 admin.site.register(OTPRequest)
-
+admin.site.register(Address)
 
 class CustomUserAdmin(BaseUserAdmin):
     """Custom admin interface for CUser model with phone number authentication."""

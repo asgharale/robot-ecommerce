@@ -1,0 +1,146 @@
+openapi: 3.0.3
+info:
+  title: Robot Shop API
+  version: 0.0.0
+  description: online digital shop :)
+paths:
+  /api/sort/v1/categories/:
+    get:
+      operationId: sort_v1_categories_list
+      description: Category Viewset
+      tags:
+      - sort
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+          description: ''
+  /api/sort/v1/categories/{address}/:
+    get:
+      operationId: sort_v1_categories_retrieve
+      description: Category Viewset
+      parameters:
+      - in: path
+        name: address
+        schema:
+          type: string
+        required: true
+      tags:
+      - sort
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/sort/v1/tags/:
+    get:
+      operationId: sort_v1_tags_list
+      description: Tag Viewset
+      tags:
+      - sort
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+          description: ''
+  /api/sort/v1/tags/{address}/:
+    get:
+      operationId: sort_v1_tags_retrieve
+      description: Tag Viewset
+      parameters:
+      - in: path
+        name: address
+        schema:
+          type: string
+        required: true
+      tags:
+      - sort
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: ''
+  /api/user/v1/otp/:
+    get:
+      operationId: user_v1_otp_retrieve
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: user_v1_otp_create
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Category:
+      type: object
+      description: model serialzer for category model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - address
+      - id
+      - name
+    Tag:
+      type: object
+      description: model serializer for category model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - address
+      - id
+      - name
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
