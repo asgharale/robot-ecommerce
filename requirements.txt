@@ -1,12 +1,17 @@
 asgiref==3.8.1
 Django==5.1.7
 django-filter==25.1
+django-jalali==7.2.0
 django-phonenumber-field==8.0.0
 djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
+jalali_core==1.0.0
+jdatetime==5.2.0
 Markdown==3.7
 phonenumbers==9.0.1
 pillow==11.1.0
 psycopg==3.2.3
 psycopg-c==3.2.3
+PyJWT==2.10.1
 sqlparse==0.5.3
 typing_extensions==4.12.2

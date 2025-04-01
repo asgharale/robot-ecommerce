@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager,
@@ -5,6 +6,20 @@ from django.contrib.auth.models import (
     PermissionsMixin
 )
 from phonenumber_field.modelfields import PhoneNumberField
+from phonenumber_field.phonenumber import PhoneNumber
+import django_jalali.db.models as jmodels
+import uuid
+import random
+import string
+from .sender import send_otp
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+
+
+def generate_otp():
+    rand = random.SystemRandom()
+    digits = rand.choices(string.digits, k=4)
+    return ''.join(digits)
 
 
 class CUserManager(BaseUserManager):
@@ -45,6 +60,36 @@ class CUserAdminManager(models.Manager):
         return super().get_queryset().filter(is_admin=True)
 
 
+class OTPRequestQuerySet(models.QuerySet):
+    def is_valid(self, receiver, request_id, password):
+        current_time = timezone.now()
+        return self.filter(
+            receiver=receiver,
+            request_id=request_id,
+            password=password,
+            created__lt=current_time,
+            created__gt=current_time-timedelta(seconds=120),
+        ).exists()
+
+
+class OTPManager(models.Manager):
+    def get_queryset(self):
+        return OTPRequestQuerySet(self.model, self._db)
+
+    def is_valid(self, receiver, request_id, password):
+        return self.get_queryset().is_valid(
+            receiver=receiver,
+            request_id=request_id,
+            password=password
+        )
+
+    def generate(self, data):
+        otp = self.model(receiver=data['receiver'], password=generate_otp())
+        otp.save(using=self._db)
+        send_otp(otp)
+        return otp
+
+
 class CUser(AbstractBaseUser, PermissionsMixin):
     """Custom user model."""
     username = PhoneNumberField(unique=True, region='IR')
@@ -82,10 +127,14 @@ class CUser(AbstractBaseUser, PermissionsMixin):
         ordering = ('id',)
         
     def has_perm(self, perm, obj=None):
-        return self.is_admin
-        
+        if self.is_admin:
+            return True
+        return super().has_perm(perm, obj)
+
     def has_module_perms(self, app_label):
-        return self.is_admin
+        if self.is_admin:
+            return True
+        return super().has_module_perms(app_label)
 
 
 class Address(models.Model):
@@ -98,3 +147,15 @@ class Address(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class OTPRequest(models.Model):
+    request_id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    receiver = PhoneNumberField(region='IR')
+    password = models.CharField(max_length=4, default=generate_otp())
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+
+    objects = OTPManager()
+
+    def __str__(self):
+        return str(self.request_id)
