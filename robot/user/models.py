@@ -139,7 +139,7 @@ class CUser(AbstractBaseUser, PermissionsMixin):
 
 class Address(models.Model):
     """Address model for users"""
-    user = models.OneToOneField(CUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CUser, on_delete=models.CASCADE, related_name='addresses')
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(max_length=500)
     house_number = models.CharField(max_length=5, blank=True)

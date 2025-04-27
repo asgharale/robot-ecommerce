@@ -22,7 +22,7 @@ class CustomUserAdmin(BaseUserAdmin):
                     'is_active', 'phone_verified', 'email_verified')
     list_filter = ('is_active', 'is_superuser', 'phone_verified', 'email_verified')
     search_fields = ('username', 'email', 'first_name', 'last_name')
-    list_editable = ('phone_verified', 'email_verified')  # Allow quick editing
+    list_editable = ('phone_verified', 'email_verified')
     
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
